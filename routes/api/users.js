@@ -47,5 +47,38 @@ router.post("/register", (req, res) => {
 
 //route to login
 //like post session but we are using a user instead
+router.post("/login", (req, res) => {
+  //variables for email and password from the body of the request
+  //aka the inputs/params user puts in
+  const email = req.body.email;
+  const password = req.body.password;
+
+  //check if email exists
+  User.findOne({ email })
+    //that previous check is saved to a variable called user
+    .then(user => {
+      //if that email doens't exist for an existing user
+      if (!user) {
+        //return error message
+        //custom @user.errors.full_messages
+        return res.status(404).json({ email: "This homie doesn't exist." });
+      }
+
+      //comparing the inputted password with the actual password associated
+      //  with the user
+      bcrypt.compare(password, user.password)
+      //isMatch is a variable that saves the result of comoparing the passwords
+        .then(isMatch => {
+          //if a match was found, rendere the response that login successful
+          if (isMatch) {
+            res.json({ msg: "Successfully logged in!" });
+          } else {
+            //if the password does not match the one associated with the email
+            //400 bad request
+            return res.status(400).json({ password: "Incorrect Password" });
+          }
+        });
+    });
+})
 
 module.exports = router;
