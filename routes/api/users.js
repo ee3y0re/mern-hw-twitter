@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+const keys = require("../../config/keys");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
@@ -71,7 +73,28 @@ router.post("/login", (req, res) => {
         .then(isMatch => {
           //if a match was found, rendere the response that login successful
           if (isMatch) {
-            res.json({ msg: "Successfully logged in!" });
+            //going to use jsonwebtoken to sign in the users info
+            //id is keyed into user object at id key
+            //handle is keyed into user object at handle key
+            const payload = { id: user.id, handle: user.handle }
+
+            jwt.sign(
+              //paload containing the users id and handle
+              payload,
+              //our token
+              keys.secretOrKey,
+              //tells key to expire in an hour
+              { expiresIn: 3600 },
+              (err, token) => {
+                //returning a signed web token with each login in order to sign
+                //  user in on the frontend
+                res.json({
+                  success: true,
+                  token: 'Bearer ' + token
+                });
+              })
+            // //temporary line before having a jsonwebtoken payload
+            // res.json({ msg: "Successfully logged in!" });
           } else {
             //if the password does not match the one associated with the email
             //400 bad request
