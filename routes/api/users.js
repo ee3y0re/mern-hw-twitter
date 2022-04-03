@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const User = require("../../models/User");
 
 const router = express.Router();
@@ -149,6 +150,16 @@ router.post("/login", (req, res) => {
           }
         });
     });
+});
+
+// //private auth route
+router.get("/current", passport.authenticate('jwt', { session: false }), (req, res) => {
+  // res.json({ msg: "Success" });
+  res.json({
+    id: req.user.id,
+    handle: req.user.handle,
+    email: req.user.email
+  });
 });
 
 module.exports = router;
