@@ -17,13 +17,13 @@ router.get("/", (req, res) => {
       res.status(404).json({ notweetsfound: "No tweets found." }));
 });
 
-// // // i think this is show tweets for single user
-// router.get("/user/:user_id", (req, res) => {
-//   Tweet.find({ user: req.params.user_id })
-//     .then(tweets => res.json(tweets))
-//     .catch(err =>
-//       res.status(404).json({ notweetsfound: "No tweets found from this user." }))
-// });
+// // i think this is show tweets for single user
+router.get("/user/:user_id", (req, res) => {
+  Tweet.find({ user: req.params.user_id })
+    .then(tweets => res.json(tweets))
+    .catch(err =>
+      res.status(404).json({ notweetsfound: "No tweets found from this user." }))
+});
 
 // // // show single tweet
 // router.get("/:id", (req, res) => {
