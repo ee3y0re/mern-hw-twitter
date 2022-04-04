@@ -25,14 +25,14 @@ router.get("/user/:user_id", (req, res) => {
       res.status(404).json({ notweetsfound: "No tweets found from this user." }))
 });
 
-// // // show single tweet
-// router.get("/:id", (req, res) => {
-//   Tweet.findById(req.params.id)
-//     .then(tweet => res.json(tweet))
-//     .catch(err =>
-//       // // is the typo supposed to be a missing "s"?
-//       res.status(404).json({ notweetfound: "No tweet found with that ID." }));
-// });
+// // show single tweet
+router.get("/:id", (req, res) => {
+  Tweet.findById(req.params.id)
+    .then(tweet => res.json(tweet))
+    .catch(err =>
+      // // is the typo supposed to be a missing "s"?
+      res.status(404).json({ notweetfound: "No tweet found with that ID." }));
+});
 
 //test route
 //every express route requires request and response as argument
