@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 
 const Tweet = require("../../models/Tweet");
-const validateTweetInput = require("mongoose");
+const validateTweetInput = require("../../validation/tweets");
 
 // // i think this is all tweets
 router.get("/", (req, res) => {
@@ -33,6 +33,24 @@ router.get("/:id", (req, res) => {
       // // is the typo supposed to be a missing "s"?
       res.status(404).json({ notweetfound: "No tweet found with that ID." }));
 });
+
+router.post('/',
+  // passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateTweetInput(req.body);
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const newTweet = new Tweet({
+      text: req.body.text,
+      user: req.userId
+    });
+
+    newTweet.save().then(tweet => res.json(tweet));
+  }
+);
 
 //test route
 //every express route requires request and response as argument
