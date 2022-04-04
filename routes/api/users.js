@@ -4,6 +4,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const User = require("../../models/User");
+const validateRegisterInput = require("../../validation/register");
+const validateLoginInput = require("../../validation/login")
 
 const router = express.Router();
 
@@ -17,12 +19,11 @@ router.get("/test", (req, res) => res.json({ msg: "this is the users route"}));
 // //  Make sure to use the x - www - form - urlencoded form type
 // //  Add a handle, email, and password to the request body
 router.post("/register", (req, res) => {
-  // // i think i found the bug
-  // const { errors, isValid } = validateRegisterInput(req.body);
+  const { errors, isValid } = validateRegisterInput(req.body);
 
-  // if (!isValid) {
-  //   return res.status(400).json(errors);
-  // }
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   
   // // no dup emails
   // User.findOne({ email: req.body.email }) //find_by(email: params[:email]) from 
@@ -81,11 +82,11 @@ router.post("/login", (req, res) => {
 
   // // deconstructuring errors and isValid 
   // //   from the result of validateLoginInput(req.body)
-  //  const { errors, isValid } = validateLoginInput(req.body);
+  const { errors, isValid } = validateLoginInput(req.body);
 
-  // if (!isValid) {
-  //   return res.status(400).json(errors);
-  // }
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   
   // // variables for email and password from the body of the request
   // // aka the inputs/params user puts in
@@ -104,11 +105,11 @@ router.post("/login", (req, res) => {
       if (!user) {
         //return error message
         //custom @user.errors.full_messages
-        return res.status(404).json({ email: "This homie doesn't exist." });
+        // return res.status(404).json({ email: "This homie doesn't exist." });
 
         // // another way to write errors
-        // errors.handle = "This homie does not exist";
-        // return res.status(400).json(errors);
+        errors.handle = "This homie does not exist";
+        return res.status(400).json(errors);
       }
 
       // // comparing the inputted password with the actual password associated
@@ -154,12 +155,12 @@ router.post("/login", (req, res) => {
 
 // //private auth route
 router.get("/current", passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json({ msg: "Success" });
-  // res.json({
-  //   id: req.user.id,
-  //   handle: req.user.handle,
-  //   email: req.user.email
-  // });
+  // res.json({ msg: "Success" });
+  res.json({
+    id: req.user.id,
+    handle: req.user.handle,
+    email: req.user.email
+  });
 });
 
 module.exports = router;
